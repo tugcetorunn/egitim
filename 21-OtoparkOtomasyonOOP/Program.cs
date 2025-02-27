@@ -14,7 +14,6 @@
             {
                 Menu();
             }
-            
         }
 
         private static void Menu()
@@ -23,8 +22,9 @@
             Console.WriteLine("1- Kapasite bilgisi");
             Console.WriteLine("2- Araç girişi");
             Console.WriteLine("3- Araç çıkışı");
-            
+
             string menuSecim = Console.ReadLine();
+            string plaka = "";
 
             switch (menuSecim)
             {
@@ -32,10 +32,10 @@
                     KapasiteBilgisi();
                     break;
                 case "2":
-                    GirisIslemleri();
+                    plaka = GirisIslemleri();
                     break;
                 case "3":
-                    //CikisIslemleri();
+                    CikisIslemleri(plaka);
                     break;
                 default:
                     Console.WriteLine("Geçersiz seçim yaptınız.");
@@ -45,7 +45,7 @@
 
         private static void CikisIslemleri(string plaka)
         {
-            
+
             if (mevcutAraclar.Find(x => x.Plaka == plaka) != null)
             {
                 var arac = mevcutAraclar.Find(x => x.Plaka == plaka);
@@ -67,13 +67,22 @@
 
         }
 
-        static List<double> motosikletUcretler = new List<double> { 40, 55, 65, 85, 105}; // saat arası id, ücret
-        static List<double> otomobilUcretler = new List<double> { 80, 110, 130, 170, 210}; // saat arası id, ücret
-        static List<double> otobusUcretler = new List<double> { 160, 220, 260, 340, 420}; // saat arası id, ücret
-        static List<double> minibusUcretler = new List<double> { 120, 165, 195, 255, 315}; // saat arası id, ücret
+        List<double> motosikletUcretler = new List<double> { 40, 55, 65, 85, 105 }; // saat arası id, ücret
+        static List<double> otomobilUcretler = new List<double> { 80, 110, 130, 170, 210 }; // saat arası id, ücret
+        static List<double> otobusUcretler = new List<double> { 160, 220, 260, 340, 420 }; // saat arası id, ücret
+        static List<double> minibusUcretler = new List<double> { 120, 165, 195, 255, 315 }; // saat arası id, ücret
+        static Dictionary<AracTipi, List<double>> ucretler = new Dictionary<AracTipi, List<double>>();
+
+
         private static void UcretHesapla(string plaka)
         {
+            ucretler.Add(AracTipi.Motosiklet, new List<double> { 40, 55, 70 });
+            ucretler.Add(AracTipi.Otomobil, new List<double> { 50, 60, 70 });
+            ucretler.Add(AracTipi.Minibüs, new List<double> { 50, 60, 70 });
+            ucretler.Add(AracTipi.Otobüs, new List<double> { 50, 60, 70 });
+
             AracKayitlari arac = mevcutAraclar.Find(x => x.Plaka == plaka);
+
             double dakika = (arac.CikisSaati - arac.GirisSaati).TotalMinutes;
             double saat = dakika / 60;
             double tutar = 0;
@@ -101,7 +110,7 @@
                     tutar = otomobilUcretler[0] * 2;
                 }
             }
-            else if(arac.AracTipi == aracTipleri[1])
+            else if (arac.AracTipi == aracTipleri[1])
             {
                 if (saat > 4 && saat <= 5)
                 {
@@ -149,34 +158,44 @@
             }
             else if (arac.AracTipi == aracTipleri[3])
             {
-                if (saat > 4 && saat <= 5)
+                var list = ucretler[AracTipi.Motosiklet];
+
+                for (int i = 0; i < 4; i++) // i=4 saat>i list teki i. elemanı al
                 {
-                    tutar = motosikletUcretler[4] * 2;
+                    if (saat > i)
+                    {
+                        tutar = list[i];
+                    }
                 }
-                else if (saat > 3 && saat <= 4)
-                {
-                    tutar = motosikletUcretler[3] * 2;
-                }
-                else if (saat > 2 && saat <= 3)
-                {
-                    tutar = motosikletUcretler[2] * 2;
-                }
-                else if (saat > 1 && saat <= 2)
-                {
-                    tutar = motosikletUcretler[1] * 2;
-                }
-                else if (saat > 0 && saat <= 1)
-                {
-                    tutar = motosikletUcretler[0] * 2;
-                }
+
+                //if (saat > 4 && saat <= 5) 
+                //{
+                //    tutar = motosikletUcretler[4] * 2;
+                //}
+                //else if (saat > 3 && saat <= 4)
+                //{
+                //    tutar = motosikletUcretler[3] * 2;
+                //}
+                //else if (saat > 2 && saat <= 3)
+                //{
+                //    tutar = motosikletUcretler[2] * 2;
+                //}
+                //else if (saat > 1 && saat <= 2)
+                //{
+                //    tutar = motosikletUcretler[1] * 2;
+                //}
+                //else if (saat > 0 && saat <= 1)
+                //{
+                //    tutar = motosikletUcretler[0] * 2;
+                //}
             }
 
             arac.Ucret = tutar;
         }
 
-        static List<string> aracTipleri = new List<string> { "Otomobil", "Otobüs", "Minibüs", "Motosiklet"};
+        static List<string> aracTipleri = new List<string> { "Otomobil", "Otobüs", "Minibüs", "Motosiklet" };
         static List<AracKayitlari> mevcutAraclar = new List<AracKayitlari>();
-        private static void GirisIslemleri()
+        private static string GirisIslemleri()
         {
             // kapasite kontrolü - mevcut araçları getir sayısını kontrol et
             Console.WriteLine("Plakanızı giriniz: ");
@@ -189,18 +208,21 @@
             }
             int gelenAracTip = int.Parse(Console.ReadLine());
 
-            mevcutAraclar.Add(new AracKayitlari { 
+            mevcutAraclar.Add(new AracKayitlari
+            {
                 Plaka = gelenPlaka,
                 AracTipi = aracTipleri[gelenAracTip],
                 GirisSaati = DateTime.Now
             });
 
             // jsona kaydet
+
+            return gelenPlaka;
         }
 
         private static void KapasiteBilgisi()
         {
-            
+
         }
     }
 
