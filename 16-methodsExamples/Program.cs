@@ -9,23 +9,20 @@
 
         // bir metod yazın parametre olarak bir sayı dizisi alsın. en büyük sayıyı döndürsün
 
-        private static int MaxNumber(int[] numbers)
+        private static int MaxNumber(int[] dizi)
         {
-            //int max = 0;
-            int[] maxMi = new int[numbers.Length];
+            if (dizi == null || dizi.Length == 0)
+                throw new ArgumentException("Dizi boş veya null olamaz.");
 
-            for (int i = 0; i < numbers.Length; i++)
+            int enBuyuk = dizi[0];
+
+            foreach (int sayi in dizi)
             {
-                maxMi[i] = numbers[i];
-                if (numbers[i] > numbers[i-1])
-            {
-
-            }
+                if (sayi > enBuyuk)
+                    enBuyuk = sayi;
             }
 
-            
-            
-            //bool MaxMi(int number) { }
+            return enBuyuk;
         }
 
         // bir metod yazın, parametre olarak bir cümle ve bir harf alsın, bu cümeldeki belirtilen
